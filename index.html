@@ -1,40 +1,409 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Data Viz Site</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>San Francisco Crime: Analysis Over the Last Two Decades</title>
+
+  <style>
+    :root {
+      --bg: #081015;
+      --bg-soft: #0d1720;
+      --panel: rgba(16, 28, 36, 0.72);
+      --text-main: #ecf7f8;
+      --text-soft: #bfd6da;
+      --text-muted: #8eaab0;
+      --accent: #3ec7b7;
+      --accent-soft: #83eadf;
+      --border: rgba(131, 234, 223, 0.14);
+      --line: rgba(131, 234, 223, 0.18);
+      --shadow: rgba(0, 0, 0, 0.28);
+      --content-width: 760px;
+      --media-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text-main);
+      line-height: 1.75;
+      background:
+        radial-gradient(circle at top, rgba(62, 199, 183, 0.10), transparent 24%),
+        linear-gradient(180deg, #061017 0%, #081015 42%, #0b141b 100%);
+    }
+
+    img,
+    iframe {
+      display: block;
+      max-width: 100%;
+      border: 0;
+    }
+
+    a {
+      color: var(--accent-soft);
+      text-decoration: none;
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 72px 20px 56px;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 50% 10%, rgba(62, 199, 183, 0.14), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
+    }
+
+    .hero-inner {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      color: var(--accent-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      line-height: 1.06;
+      font-weight: 800;
+      margin-bottom: 22px;
+      text-wrap: balance;
+    }
+
+    .deck {
+      max-width: 760px;
+      margin: 0 auto;
+      font-size: 1.08rem;
+      color: var(--text-soft);
+    }
+
+    .scroll-note {
+      margin-top: 34px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+    }
+
+    main {
+      padding: 40px 0 80px;
+    }
+
+    .story-section {
+      padding: 42px 20px;
+    }
+
+    .story-text {
+      max-width: var(--content-width);
+      margin: 0 auto;
+    }
+
+    .story-text + .story-text {
+      margin-top: 22px;
+    }
+
+    .section-kicker {
+      color: var(--accent-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: clamp(1.7rem, 3vw, 2.5rem);
+      line-height: 1.18;
+      margin-bottom: 16px;
+      font-weight: 750;
+      text-wrap: balance;
+    }
+
+    p {
+      font-size: 1.04rem;
+      color: var(--text-soft);
+      margin-bottom: 16px;
+    }
+
+    .lead {
+      font-size: 1.12rem;
+      color: var(--text-main);
+    }
+
+    .story-divider {
+      width: min(160px, 32%);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 16px auto 8px;
+      opacity: 0.75;
+    }
+
+    .media-block {
+      width: min(var(--media-width), 94vw);
+      margin: 30px auto 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(14, 23, 31, 0.92), rgba(10, 18, 24, 0.96));
+      box-shadow: 0 18px 42px var(--shadow);
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+
+    .media-block:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.38);
+      border-color: rgba(131, 234, 223, 0.28);
+    }
+
+    .media-block img,
+    .media-block iframe {
+      width: 100%;
+      background: #fff;
+    }
+
+    .media-block iframe {
+      min-height: 620px;
+      background: #0a141a;
+    }
+
+    .caption {
+      max-width: var(--content-width);
+      margin: 14px auto 0;
+      padding: 0 20px;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    .caption strong {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .pull-quote {
+      max-width: 860px;
+      margin: 20px auto;
+      padding: 24px 28px;
+      border-left: 3px solid var(--accent);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 0 16px 16px 0;
+      color: var(--text-main);
+      font-size: 1.14rem;
+      line-height: 1.7;
+    }
+
+    .ending {
+      padding-top: 30px;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 20px 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        min-height: auto;
+        padding: 64px 20px 44px;
+      }
+
+      .media-block iframe {
+        min-height: 460px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 24px 0 56px;
+      }
+
+      .story-section {
+        padding: 30px 16px;
+      }
+
+      .deck,
+      .story-text,
+      .caption {
+        max-width: 100%;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .lead {
+        font-size: 1.04rem;
+      }
+
+      .pull-quote {
+        margin: 18px 16px;
+        padding: 20px 20px;
+        font-size: 1.04rem;
+      }
+
+      .media-block {
+        width: min(100%, 96vw);
+        border-radius: 16px;
+      }
+
+      .media-block iframe {
+        min-height: 360px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .eyebrow,
+      .section-kicker {
+        font-size: 0.7rem;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .media-block iframe {
+        min-height: 300px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>This site will soon contain interactive data visualizations about crime in San Francisco.</p>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Social Data &amp; Visualization</div>
+      <h1>One City, Many Crime Patterns</h1>
+      <p class="deck">
+        How crime in San Francisco changes by district, location and time of the day. A data story by Jóhann Steinn Miiller Ólafsson (s252862) &amp; Snorri Arnarsson (s252825)
+      </p>
+      <div class="scroll-note">Scroll to read the story</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="story-section">
+      <div class="story-text">
+        <div class="section-kicker">Introduction</div>
+        <h2>One city does not mean one crime pattern</h2>
+        <p class="lead">
+          Citywide summaries can make crime look like a single trend, but San Francisco is made up of districts with very different patterns.
+          A useful crime story therefore has to move beyond totals and ask what changes depending on place.
+        </p>
+        <p>
+          This data story uses data provided by the city of San Francisco from 2003 to 2025 to show how crime patterns differ across police districts, how they are group in one certain areas of the city and how they change ovet the course of the day. The story focuses on 9 crime categories: Arson, Disorderly Conduct, Drug Offenses, Larceny Theft, Missing Person, Prostitution, Robbery, Vandalism and Weapons Laws. 
+        </p>
+      </div>
+    </section>
+
+    <div class="story-divider"></div>
+
+    <section class="story-section">
+      <div class="story-text">
+        
+        <h2>Crime profiles differ sharply across police districts</h2>
+        <p>
+          This first figure introduces the main claim of the story. Instead of just looking at which district has the most crime overall, it compares each district’s profile to the city average for several focus crimes and across two periodsm those two periods are two diffrent data sets from the city of San Francisco. The graphs clearly show that diffrent districts have diffrent crime profiles, for example in the district of Mission Prostitution is much more common than in other districts across the city. The same can be said for Drug Offenses in the district of Tenderloin. The figure also shows that crime profiles have changed over time across the two datasets, for example in the district of Bayview the ratio of Arson has decreased significantly. Now why the changes actually happen between the two is good question. It can be political, social or economic changes in the city. Were new laws made on Drug Offenses? Did the city invest more in certain districts? Did the population change in certain areas? These are all questions that can be explored. Tenderloin has, according to The San Francisco Chronicle, been the center of the city's drug trade, since 2018 having about 60% of all drug offenses. And Mission has a long standing street sex-work corridor.
+      </div>
+
+      <figure class="media-block">
+        <img src="images/crime_profile_ratios.png" alt="Crime Profile Ratios by District" />
+      </figure>
+
+      <figcaption class="caption">
+        <strong>Figure 1.</strong> Crime profile ratios by police districts, getting an overall view and comparing the two datasets provided by the city of San Francisco. The blue bars indicate the ratios from 2003 to 2018 while the orange bars indicate the ratios from 2018 to 2025. The average is set at 1 and indicated by the dashed line. 
+      </figcaption>
+    </section>
+
+
+
+    <div class="story-divider"></div>
+
+    <section class="story-section">
+      <div class="story-text">
+        <div class="section-kicker">Figure 2</div>
+        <h2>Mapping crime reveals where patterns concentrate</h2>
+        <p>A district-level map can help show the diffrence in crime profiles across the city and how the location of the district matters when interpreting the data. Figure 2 clearly shows that the district of Tenderloin has by the far the highest ratio of drug offenses relative to the city average, while the district of Bayview has the second highest ratio, but is still far behind. The map also shows that the districts with the highest ratios of drug offenses are all located in the central parts of the city, while the districts in the outskirts have much lower ratios. 
+        </p>
+      </div>
+
+      <figure class="media-block">
+        <iframe
+          src="vizualizations/district_ratio_map.html"
+          title="Drug Offenses across San Francisco Districts, Relative to the City Average">
+        </iframe>
+      </figure>
+
+      <figcaption class="caption">
+        <strong>Figure 2.</strong> Drug offenses across San Francisco districts, relative to the city average. The red areas show where drug offenses are more common than the city average, while the blue areas show where they are less common. 
+      </figcaption>
+    </section>
+
+
+    <div class="story-divider"></div>
+
+    <section class="story-section">
+      <div class="story-text">
+        <div class="section-kicker">Figure 3</div>
+        <h2>Crime also changes over the course of the day</h2>
+        <p>
+          The third and final figure add the time aspect to the story. It shows how crime changes over the course of the day, and how the patterns differ across crime categories. The figure clearly shows that some crimes are more common during the day while others at night. For example drug offenses are most common in the afternoon and early evening, while prostition is most common in the evenins and night. Some crimes are more evenly distributes across the day. 
+        </p>
+        <p>     
+          By clicking on the crime type you can see the patterns for the day. 
+        </p>
+      </div>
+
+      <figure class="media-block">
+        <iframe
+          src="vizualizations/hourly_crime_plot.html"
+          title="Interactive visualization placeholder">
+        </iframe>
+      </figure>
+
+      <figcaption class="caption">
+        <strong>Figure 3.</strong>  Crimes patterns across the day for diffrent crime categories. The plot shows the average number of crimes for each hour of the day.
+      </figcaption>
+    </section>
+
+    <section class="story-section ending">
+      <div class="story-text">
+        <div class="section-kicker">Conclusion</div>
+        <h2>A more local view changes the story</h2>
+        <p>
+          The main takeaway of the page should be stated clearly here in your own words. The conclusion should briefly return to the central point: San Francisco is not defined by one single crime pattern, and local variation matters for interpreting the data honestly.
+        </p>
+        <p>
+          You can also use this last section for a short note on data limitations, such as changes in reporting systems, enforcement priorities, or classification practices over time.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Social Data &amp; Visualization · Assignment 2 · Created by s252862 &amp; s252825
+  </footer>
 </body>
 </html>
-
-<div style="text-align:center; margin-top:40px;">
-  <h2>Crime Profile Ratios by District</h2>
-  <img src="crime_profile_ratios.png"
-       alt="Crime Profile Ratios"
-       style="width:80%; max-width:900px; border-radius:10px;">
-</div>
-
-<div style="margin-top:40px;">
-  <h2>Interactive Crime Map</h2>
-  
-  <iframe 
-      src="random_district_map.html"
-      width="100%" 
-      height="600px"
-      style="border:none; border-radius:10px;">
-  </iframe>
-</div>
-
-<div style="margin-top:40px;">
-  <h2>Interactive Map (Folium)</h2>
-
-  <iframe 
-      src="sf_map2.html"
-      width="100%" 
-      height="600px"
-      style="border:none; border-radius:10px;">
-  </iframe>
-</div>
-
